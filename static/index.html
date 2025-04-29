@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>QRPix</title>
+        <style>
+            body {
+                font-family: sans-serif;
+                background: #f0f0f0;
+                padding: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+            h1 {
+                margin-bottom: 20px;
+            }
+            form, .buttons {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px #ccc;
+                margin: 10px 0;
+                width: 100%;
+                max-width: 400px;
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            input {
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px;
+                border: none;
+                background: #007bff;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #0056b3;
+            }
+            img {
+                margin-top: 20px;
+                max-width: 300px;
+                border: 1px solid #ccc;
+                border-radius: 6px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Gerador QR Code Pix</h1>
+
+        <div class="buttons">
+            <button onclick="getDefault()">QR do Site</button>
+        </div>
+
+        <form id="pixForm">
+            <input
+                name="receiver_name"
+                placeholder="Nome do recebedor"
+                required
+            />
+            <input name="key" placeholder="Chave Pix" required />
+            <input name="city" placeholder="Cidade" required />
+            <input name="amount" placeholder="Valor (opcional)" />
+            <input name="description" placeholder="Descrição (opcional)" />
+            <input name="transaction_id" placeholder="TxID (opcional)" />
+            <button type="submit">Gerar QR Personalizado</button>
+        </form>
+
+        <img id="qrImage" style="display: none" />
+
+        <script>
+            async function getDefault() {
+                const res = await fetch("/qrpix/default");
+                const blob = await res.blob();
+                showQrCode(blob);
+            }
+
+            document.getElementById("pixForm").addEventListener(
+                "submit",
+                async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(e.target);
+                    const payload = {};
+                    formData.forEach((value, key) => {
+                        if (value.length > 0) {
+                            payload[key] = value;
+                        }
+                    });
+                    if (payload.amount) {
+                        payload.amount = parseFloat(
+                            payload.amount,
+                        );
+                    }
+
+                    const res = await fetch("/qrpix/generate", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(payload),
+                    });
+
+                    const blob = await res.blob();
+                    showQrCode(blob);
+                },
+            );
+
+            function showQrCode(blob) {
+                const img = document.getElementById("qrImage");
+                const url = URL.createObjectURL(blob);
+                img.src = url;
+                img.style.display = "block";
+            }
+        </script>
+    </body>
+</html>
