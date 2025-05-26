@@ -3,8 +3,8 @@ module github.com/gabrielluizsf/qrpix
 go 1.24.1
 
 require (
-	github.com/i9si-sistemas/assert v0.0.0-20241226143514-2239efdffece
-	github.com/i9si-sistemas/nine v0.0.0-20250429142101-1d42a9fbc275
+	github.com/i9si-sistemas/assert v0.0.0-20250430171352-359d1481c58c
+	github.com/i9si-sistemas/nine v0.0.0-20250526190116-c0dbd4187bba
 	github.com/i9si-sistemas/pix v0.0.0-20250430185635-8adb310675cf
 )
 
